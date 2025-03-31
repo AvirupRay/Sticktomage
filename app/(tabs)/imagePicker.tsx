@@ -4,6 +4,7 @@ import React from "react";
 import * as ImagePicker from "expo-image-picker";
 import { type ImageSource } from "expo-image";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as MediaLibrary from "expo-media-library";
 
 //COMPONENT IMPORT
 import ImageViewer from "@/components/imageViewer";
@@ -12,7 +13,6 @@ import IconButton from "@/components/IconButton";
 import CircleButton from "@/components/CircularButton";
 import EmojiPicker from "@/components/EmojiPicker";
 import EmojiList from "@/components/EmojiList";
-import ExpoImage from "expo-image/build/ExpoImage";
 import EmojiSticker from "@/components/EmojiSticker";
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
@@ -25,6 +25,7 @@ export default function imagePicker() {
   const [pickedEmoji, setPickedEmoji] = React.useState<ImageSource | undefined>(
     undefined
   );
+  const [status, requestPermission] = MediaLibrary.usePermissions(); //for giving permission of screen-shot
 
   //we made a function to pick an image from users gallery
   const pickImageAsync = async () => {
@@ -58,13 +59,20 @@ export default function imagePicker() {
     // we will implement this later
   };
 
+  if (status === null) {
+    requestPermission(); //request permission for taking screenshot
+  }
+  const imageRef = React.useRef<View>(null);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        <ImageViewer imgSource={PlaceholderImage} selectedImg={picName} />
-        {pickedEmoji && (
-          <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
-        )}
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImg={picName} />
+          {pickedEmoji && (
+            <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
+          )}
+        </View>
       </View>
 
       {showAppOption ? (
