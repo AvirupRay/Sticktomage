@@ -55,9 +55,7 @@ export default function imagePicker() {
   const onModalClose = () => {
     setIsModalVisible(false);
   };
-  const onSaveImageAsync = async () => {
-    // we will implement this later
-  };
+  const onSaveImageAsync = async () => {};
 
   if (status === null) {
     requestPermission(); //request permission for taking screenshot
