@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { type ImageSource } from "expo-image";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as MediaLibrary from "expo-media-library";
+import { captureRef } from "react-native-view-shot";
 
 //COMPONENT IMPORT
 import ImageViewer from "@/components/imageViewer";
@@ -26,6 +27,7 @@ export default function imagePicker() {
     undefined
   );
   const [status, requestPermission] = MediaLibrary.usePermissions(); //for giving permission of screen-shot
+  const imageRef = React.useRef<View>(null);
 
   //we made a function to pick an image from users gallery
   const pickImageAsync = async () => {
@@ -55,13 +57,25 @@ export default function imagePicker() {
   const onModalClose = () => {
     setIsModalVisible(false);
   };
-  const onSaveImageAsync = async () => {};
+
+  const onSaveImageAsync = async () => {
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: 440,
+        quality: 1,
+      });
+      await MediaLibrary.saveToLibraryAsync(localUri);
+      if (localUri) {
+        alert("Saved!");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   if (status === null) {
     requestPermission(); //request permission for taking screenshot
   }
-  const imageRef = React.useRef<View>(null);
-
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
